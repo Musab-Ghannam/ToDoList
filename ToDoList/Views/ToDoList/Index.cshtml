@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ToDoList.Models.TaskItem>
+
+<div class="d-flex align-items-center mb-3">
+    <div>
+       
+    </div>
+    <div class="ms-auto">
+        <a href="@Url.Action("CreateTask", "ToDoList")" class="btn btn-success">
+            <i class="fa fa-plus-circle fa-fw me-1"></i>Add Task
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>IsCompleted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in Model)
+                    {
+                        <tr>
+                            <td>@task.Id</td>
+                            <td>@task.Title</td>
+                            <td>@Html.CheckBoxFor(m => task.IsCompleted, new { @disabled = "disabled" })</td>
+
+                            <td>
+                                <a href="ToDoList/GetTaskById/@task.Id" class="btn btn-primary">View</a>
+                                <a href="ToDoList/GetTaskById/@task.Id" class="btn btn-primary">Edit</a>
+                                <a href="#" class="btn btn-danger">Delete</a>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

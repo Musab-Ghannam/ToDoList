@@ -1,0 +1,45 @@
+﻿@model ToDoList.Models.TaskItemPost;
+
+@{
+    ViewData["Title"] = "Create Task";
+}
+
+<div class="d-flex align-items-center mb-3">
+    <div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Index">Task List</a></li>
+            <li class="breadcrumb-item active">Create Task</li>
+        </ol>
+    </div>
+</div>
+
+<div class="card">
+    <div class="tab-content p-4">
+
+        <div class="tab-pane active">
+            <h2>Create Task</h2>
+            <br />
+
+            <form asp-action="CreateTask" asp-controller="ToDoList" method="post" id="CreateForm">
+
+                <div class="row">
+                    <!-- Title Field -->
+                    <div class="col-md-8 mb-3 form-group">
+                        <label class="form-label" for="Title">@Html.DisplayNameFor(m => m.Title)</label>
+                        <textarea class="form-control" id="Title" name="Title" rows="3">@Model.Title</textarea>
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                    </div>
+
+                   
+                    <div class="col-md-4 mb-3 form-group d-flex align-items-center">
+                        <div>
+                            <input type="checkbox" asp-for="IsCompleted" id="IsCompleted" class="form-check-input" />
+                            <label class="form-check-label" for="IsCompleted">Is Completed</label>
+                        </div>
+                    </div>
+                </div>
+                <input id="createButton" type="submit" value="Create" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</div>
