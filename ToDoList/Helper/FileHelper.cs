@@ -1,9 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.TypeConversion;
-using System.Formats.Asn1;
-using System.Formats.Tar;
 using System.Globalization;
-using System.Text;
 using ToDoList.Models;
 
 namespace ToDoList.Helper
@@ -15,6 +12,7 @@ namespace ToDoList.Helper
         private const string Folder_NAME = "TaskItemList";
         #endregion
 
+        #region ReadFile
         public static IEnumerable<TaskItem> ReadCsvFile()
         {
             try
@@ -22,7 +20,7 @@ namespace ToDoList.Helper
                 using (var reader = new StreamReader(GetFilePath()))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var records = csv.GetRecords<TaskItem>();
+                    var records = csv.GetRecords<TaskItem>().Where(c=>c.IsDeleted == 0);
                     return records.ToList();
                 }
             }
@@ -64,7 +62,9 @@ namespace ToDoList.Helper
                 throw new ApplicationException("Error reading CSV file", ex);
             }
         }
+        #endregion
 
+        #region AddToDoList
         public static IList<TaskItem> AddTaskToCSVFile(List<TaskItem> taskItemList)
         {
             using (var writer = new StreamWriter(GetFilePath()))
@@ -96,16 +96,40 @@ namespace ToDoList.Helper
             }
         }
 
+        #endregion
 
+        #region UpdateToDoList
+        public static List<TaskItem> UpdateToDoList(TaskItemUpdate taskItemUpadte)
+        {
+            var existToDoList = ReadCsvFile();
+            var existTask = existToDoList.FirstOrDefault(c => c.Id == taskItemUpadte.Id);
+            if (existTask is null)
+            {
+                throw new KeyNotFoundException($"Task with ID {taskItemUpadte.Id} not found.");
+            }
+            existTask.Title = taskItemUpadte.Title;
+            existTask.IsCompleted = taskItemUpadte.IsCompleted;
+            existTask.IsDeleted = taskItemUpadte.IsDeleted;
+            using (var writer = new StreamWriter(GetFilePath()))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(existToDoList);
+            }
+            return existToDoList.ToList();
+
+        }
+        #endregion
+
+        #region NoAction
         private static List<TaskItem> GetToDoList()
         {
             var taskItemList = new List<TaskItem>()
             {
-                 new TaskItem { Id = 1, Title = "Complete project documentation", IsCompleted = true },
-                 new TaskItem { Id = 2, Title = "Implement login functionality", IsCompleted = false },
-                 new TaskItem { Id = 3, Title = "Fix bugs in the user dashboard", IsCompleted = false },
-                 new TaskItem { Id = 4, Title = "Review pull requests from the team", IsCompleted = true },
-                 new TaskItem { Id = 5, Title = "Plan next sprint tasks", IsCompleted = false }
+                 new TaskItem { Id = 1, Title = "Complete project documentation", IsCompleted = true, IsDeleted = 0 },
+                 new TaskItem { Id = 2, Title = "Implement login functionality", IsCompleted = false, IsDeleted = 0  },
+                 new TaskItem { Id = 3, Title = "Fix bugs in the user dashboard", IsCompleted = false, IsDeleted = 0  },
+                 new TaskItem { Id = 4, Title = "Review pull requests from the team", IsCompleted = true, IsDeleted = 0  },
+                 new TaskItem { Id = 5, Title = "Plan next sprint tasks", IsCompleted = false, IsDeleted = 0  }
             };
             return taskItemList;
         }
@@ -116,5 +140,6 @@ namespace ToDoList.Helper
             return filePath;
 
         }
+        #endregion
     }
 }

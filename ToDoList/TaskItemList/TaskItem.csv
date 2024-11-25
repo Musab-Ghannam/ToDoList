@@ -1,10 +1,6 @@
-Id,Title,IsCompleted
-1,Complete project documentation,True
-2,Implement login functionality,False
-3,Fix bugs in the user dashboard,False
-4,Review pull requests from the team,True
-5,Plan next sprint tasks,False
-6,ssqwqw,True
-7,wws,True
-8,wwswq,True
-9,begtedfe,True
+Id,Title,IsCompleted,IsDeleted
+2,Implement login functionality,False,1
+3,Fix bugs in the user dashboard,False,0
+4,Review pull requests from the team,True,0
+5,Plan next sprint tasks,False,0
+6,dew,True,0
