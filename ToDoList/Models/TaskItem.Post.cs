@@ -12,6 +12,7 @@ namespace ToDoList.Models
         [Required]
         public string Title { get; set; }
         public bool IsCompleted { get; set; } = true;
+        public int IsDeleted { get; set; } = 0;
 
         public static implicit operator TaskItem(TaskItemPost taskItemPost)
         {
@@ -19,6 +20,7 @@ namespace ToDoList.Models
             {
                 Title = taskItemPost.Title,
                 IsCompleted = taskItemPost.IsCompleted,
+                IsDeleted = taskItemPost.IsDeleted,
                 Id = FileHelper.ReadCsvFile().Count() + 1
             };
         }

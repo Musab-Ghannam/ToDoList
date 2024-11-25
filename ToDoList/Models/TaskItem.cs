@@ -6,6 +6,7 @@ namespace ToDoList.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public bool IsCompleted { get; set; }
+        public int IsDeleted { get; set; }
 
         public static implicit operator TaskItemResponse(TaskItem taskItem)
         {

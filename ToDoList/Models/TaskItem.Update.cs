@@ -11,15 +11,6 @@ namespace ToDoList.Models
         [Required]
         public string Title { get; set; }
         public bool IsCompleted { get; set; } = true;
-
-        public static implicit operator TaskItem(TaskItemUpdate taskItemPut)
-        {
-            return new TaskItem
-            {
-                Title = taskItemPut.Title,
-                IsCompleted = taskItemPut.IsCompleted,
-                Id = taskItemPut.Id
-            };
-        }
+        public int IsDeleted { get; set; }
     }
 }

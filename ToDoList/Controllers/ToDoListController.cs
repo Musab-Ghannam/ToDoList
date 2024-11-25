@@ -35,19 +35,35 @@ namespace ToDoList.Controllers
         [HttpGet]
         public IActionResult GetTaskById(int id)
         {
-            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == id);
+            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == id && c.IsDeleted == 0);
             var taskresponse = (TaskItemResponse)taskItem;
             return View(taskresponse);
         }
         #endregion
 
         #region UpdateTask
-        [HttpPatch]
+        [HttpPost]
         public IActionResult UpdateItem(TaskItemUpdate taskItemUpadte)
         {
-            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == taskItemUpadte.Id);
-            var taskresponse = (TaskItemResponse)taskItem;
-            return View(taskresponse);
+            var taskresponse = FileHelper.UpdateToDoList(taskItemUpadte);
+            return View(nameof(Index), taskresponse);
+        }
+        #endregion
+
+        #region DeleteTask
+        [HttpPost]
+        public IActionResult DeleteItem(int id)
+        {
+            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == id && c.IsDeleted == 0);
+            var taskUpdate = new TaskItemUpdate
+            {
+                Id = id,
+                IsDeleted = 1,
+                IsCompleted = taskItem.IsCompleted,
+                Title = taskItem.Title,
+            };
+            var taskresponse = FileHelper.UpdateToDoList(taskUpdate);
+            return View(nameof(Index), taskresponse);
         }
         #endregion
 
