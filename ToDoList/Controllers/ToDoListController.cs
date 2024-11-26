@@ -44,7 +44,7 @@ namespace ToDoList.Controllers
             {
                 ShowErrorMessage("There is an issue");
             }
-            return View(nameof(Index), toDoList);
+            return RedirectToAction(nameof(Index));
         }
 
         #endregion
