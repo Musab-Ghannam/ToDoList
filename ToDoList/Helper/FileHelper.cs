@@ -20,7 +20,7 @@ namespace ToDoList.Helper
                 using (var reader = new StreamReader(GetFilePath()))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var records = csv.GetRecords<TaskItem>().Where(c=>c.IsDeleted == 0);
+                    var records = csv.GetRecords<TaskItem>().Where(c => c.IsDeleted == 0);
                     return records.ToList();
                 }
             }
@@ -38,6 +38,30 @@ namespace ToDoList.Helper
             }
         }
 
+        public static IEnumerable<TaskItem> ReadAllCsvFile()
+        {
+            try
+            {
+                using (var reader = new StreamReader(GetFilePath()))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    var records = csv.GetRecords<TaskItem>();
+                    return records.ToList();
+                }
+            }
+            catch (HeaderValidationException ex)
+            {
+                throw new ApplicationException("CSV file header is invalid.", ex);
+            }
+            catch (TypeConverterException ex)
+            {
+                throw new ApplicationException("CSV file contains invalid data format.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error reading CSV file", ex);
+            }
+        }
         public static TaskItem ReadSingleRecordCsvFile(Func<TaskItem, bool> func)
         {
             try
@@ -65,14 +89,26 @@ namespace ToDoList.Helper
         #endregion
 
         #region AddToDoList
-        public static IList<TaskItem> AddTaskToCSVFile(List<TaskItem> taskItemList)
+        public static bool AddTaskToCSVFile(List<TaskItem> taskItemList)
         {
-            using (var writer = new StreamWriter(GetFilePath()))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            try
             {
-                csv.WriteRecords(taskItemList);
+                if (taskItemList is null)
+                {
+                    return false;
+                }
+                using (var writer = new StreamWriter(GetFilePath()))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(taskItemList);
+                }
+                return true;
             }
-            return taskItemList;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error Update CSV file", ex);
+            }
+
         }
 
         public static void CreateAndAddListToCSVFile()
@@ -99,23 +135,65 @@ namespace ToDoList.Helper
         #endregion
 
         #region UpdateToDoList
-        public static List<TaskItem> UpdateToDoList(TaskItemUpdate taskItemUpadte)
+        public static bool UpdateToDoList(TaskItemUpdate taskItemUpadte)
         {
-            var existToDoList = ReadCsvFile();
-            var existTask = existToDoList.FirstOrDefault(c => c.Id == taskItemUpadte.Id);
-            if (existTask is null)
+            try
             {
-                throw new KeyNotFoundException($"Task with ID {taskItemUpadte.Id} not found.");
+                if (taskItemUpadte is null)
+                {
+                    return false;
+                }
+                var existToDoList = ReadAllCsvFile();
+                var existTask = existToDoList.FirstOrDefault(c => c.Id == taskItemUpadte.Id);
+                if (existTask is null)
+                {
+                    throw new KeyNotFoundException($"Task with ID {taskItemUpadte.Id} not found.");
+                }
+                existTask.Title = taskItemUpadte.Title;
+                existTask.IsCompleted = taskItemUpadte.IsCompleted;
+                existTask.IsDeleted = taskItemUpadte.IsDeleted;
+                using (var writer = new StreamWriter(GetFilePath()))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(existToDoList);
+                }
+                return true;
+
             }
-            existTask.Title = taskItemUpadte.Title;
-            existTask.IsCompleted = taskItemUpadte.IsCompleted;
-            existTask.IsDeleted = taskItemUpadte.IsDeleted;
-            using (var writer = new StreamWriter(GetFilePath()))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            catch (Exception ex)
             {
-                csv.WriteRecords(existToDoList);
+                throw new ApplicationException("Error Update CSV file", ex);
             }
-            return existToDoList.ToList();
+
+
+        }
+        #endregion
+
+        #region Delete
+        public static List<TaskItem> DelteToDoList(TaskItemDelete taskItemDelete)
+        {
+            try
+            {
+                var existToDoList = ReadAllCsvFile();
+                var existTask = existToDoList.FirstOrDefault(c => c.Id == taskItemDelete.Id);
+                if (existTask is null)
+                {
+                    throw new KeyNotFoundException($"Task with ID {taskItemDelete.Id} not found.");
+                }
+                existTask.IsDeleted = 1;
+                using (var writer = new StreamWriter(GetFilePath()))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(existToDoList);
+                }
+                return existToDoList.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error Update CSV file", ex);
+            }
+
 
         }
         #endregion

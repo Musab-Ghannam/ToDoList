@@ -2,7 +2,6 @@
 
 <div class="d-flex align-items-center mb-3">
     <div>
-       
     </div>
     <div class="ms-auto">
         <a href="@Url.Action("CreateTask", "ToDoList")" class="btn btn-success">
@@ -27,16 +26,24 @@
                     @foreach (var task in Model)
                     {
                         <tr>
+                            
                             <td>@task.Id</td>
                             <td>@task.Title</td>
                             <td>@Html.CheckBoxFor(m => task.IsCompleted, new { @disabled = "disabled" })</td>
 
                             <td>
                                 <a asp-action="GetTaskById" asp-route-id="@task.Id" class="btn btn-primary">Edit</a>
-                                <a asp-action="DeleteItem" asp-route-id="@task.Id" class="btn btn-danger">Delete</a>
-                            </td>
 
+                           @*      <form asp-action="DeleteItem" asp-controller="ToDoList" method="post" style="display:inline;">
+                                    <input type="hidden" name="Id" value="@task.Id" />
+                                    <input type="submit" name="Delete" value="Delete" class="btn btn-danger delete-link" />
+                                </form> *@
+                                <a asp-action="DeleteItem" asp-route-id="@task.Id" class="btn btn-danger delete-link">Delete</a>
+
+                            </td>
+                         
                         </tr>
+                      
                     }
                 </tbody>
             </table>
