@@ -21,7 +21,7 @@ namespace ToDoList.Models
                 Title = taskItemPost.Title,
                 IsCompleted = taskItemPost.IsCompleted,
                 IsDeleted = taskItemPost.IsDeleted,
-                Id = FileHelper.ReadCsvFile().Count() + 1
+                Id = FileHelper.ReadAllCsvFile().Count() + 1
             };
         }
     

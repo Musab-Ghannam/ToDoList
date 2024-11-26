@@ -13,14 +13,18 @@ namespace ToDoList.Helper
         #endregion
 
         #region ReadFile
-        public static IEnumerable<TaskItem> ReadCsvFile()
+        public static IEnumerable<TaskItem> ReadCsvFile(Func<TaskItem, bool>? func = null)
         {
             try
             {
                 using (var reader = new StreamReader(GetFilePath()))
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    var records = csv.GetRecords<TaskItem>().Where(c => c.IsDeleted == 0);
+                    var records = csv.GetRecords<TaskItem>();
+                    if (func != null)
+                    {
+                        records = records.Where(func);
+                    }
                     return records.ToList();
                 }
             }

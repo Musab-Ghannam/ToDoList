@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 using ToDoList.Helper;
 using ToDoList.Models;
 
@@ -8,11 +7,19 @@ namespace ToDoList.Controllers
     public class ToDoListController : BaseController
     {
 
+        #region GetTasks
         public IActionResult Index()
         {
-            var taskItemList = FileHelper.ReadCsvFile();
+            var taskItemList = FileHelper.ReadCsvFile(c=>c.IsCompleted == true &&  c.IsDeleted == 0);
             return View(taskItemList);
         }
+
+        public IActionResult PendingTask()
+        {
+            var taskItemList = FileHelper.ReadCsvFile(c => c.IsCompleted == false && c.IsDeleted == 0);
+            return View(taskItemList);
+        }
+        #endregion
 
         #region CreateTask
         public IActionResult CreateTask()
@@ -39,7 +46,7 @@ namespace ToDoList.Controllers
             {
                 ShowErrorMessage("There is an issue");
             }
-            return View(nameof(Index), toDoList);
+            return RedirectToAction(nameof(Index));
         }
 
         #endregion

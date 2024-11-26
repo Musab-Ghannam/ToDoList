@@ -1,0 +1,25 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "View Tasks";
+    var tabIndex = ViewBag.TabIndex;
+    var isCompleted = ViewBag.isCompleted;
+}
+
+
+<div class="card">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="@($"/ToDoList/Index/{isCompleted}")" class="nav-link @(isCompleted == 1 ? "active" : "")">
+                Completed Task
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="@($"/ToDoList/PendingTask/{isCompleted}")" class="nav-link @(isCompleted == 2 ? "active" : "")">
+                Pending Task
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content p-4">
+        @RenderBody()
+    </div>
+</div>
