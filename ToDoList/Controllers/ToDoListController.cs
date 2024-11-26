@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 using ToDoList.Helper;
 using ToDoList.Models;
 
@@ -10,7 +9,13 @@ namespace ToDoList.Controllers
 
         public IActionResult Index()
         {
-            var taskItemList = FileHelper.ReadCsvFile();
+            var taskItemList = FileHelper.ReadCsvFile(c=>c.IsCompleted == true &&  c.IsDeleted == 0);
+            return View(taskItemList);
+        }
+
+        public IActionResult PendingTask()
+        {
+            var taskItemList = FileHelper.ReadCsvFile(c => c.IsCompleted == false && c.IsDeleted == 0);
             return View(taskItemList);
         }
 
