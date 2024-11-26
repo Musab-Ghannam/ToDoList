@@ -20,13 +20,14 @@
             <h2>Create Task</h2>
             <br />
 
-            <form asp-action="UpdateItem" asp-controller="ToDoList" method="post">
+            <form asp-action="UpdateItem" asp-controller="ToDoList" method="post" id="CreateForm">
                 <input type="hidden" asp-for="Id" />
                 <div class="row">
                     <div class="col-md-8 mb-3 form-group">
                         <label class="form-label" for="Title">@Html.DisplayNameFor(m => m.Title)</label>
                         <textarea class="form-control" id="Title" name="Title" rows="3">@Model.Title</textarea>
                         @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                        <div id="titleError" class="text-danger"></div>
                     </div>
 
 
@@ -42,3 +43,4 @@
         </div>
     </div>
 </div>
+<script src="~/js/validation.js" asp-append-version="true"></script>

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 using ToDoList.Helper;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
 {
-    public class ToDoListController : Controller
+    public class ToDoListController : BaseController
     {
 
         public IActionResult Index()
@@ -23,10 +24,22 @@ namespace ToDoList.Controllers
         [HttpPost]
         public IActionResult CreateTask(TaskItemPost taskItem)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(taskItem);
+            }
             var toDoList = FileHelper.ReadCsvFile().ToList();
             toDoList.Add(taskItem);
             var taskItemList = FileHelper.AddTaskToCSVFile(toDoList);
-            return View(nameof(Index), taskItemList);
+            if (taskItemList)
+            {
+                ShowSuccessMessage("Task Created Successfully");
+            }
+            else
+            {
+                ShowErrorMessage("There is an issue");
+            }
+            return View(nameof(Index), toDoList);
         }
 
         #endregion
@@ -45,25 +58,34 @@ namespace ToDoList.Controllers
         [HttpPost]
         public IActionResult UpdateItem(TaskItemUpdate taskItemUpadte)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(taskItemUpadte);
+            }
             var taskresponse = FileHelper.UpdateToDoList(taskItemUpadte);
-            return View(nameof(Index), taskresponse);
+            if (taskresponse)
+            {
+                ShowSuccessMessage("Task Updated Successfully");
+            }
+            else
+            {
+                ShowErrorMessage("There is an issue");
+            }
+            return RedirectToAction(nameof(Index));
         }
         #endregion
 
         #region DeleteTask
         [HttpPost]
-        public IActionResult DeleteItem(int id)
+        public IActionResult DeleteItem(TaskItemDelete taskItemDelete)
         {
-            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == id && c.IsDeleted == 0);
-            var taskUpdate = new TaskItemUpdate
+            var taskItem = FileHelper.ReadSingleRecordCsvFile(c => c.Id == taskItemDelete.Id && c.IsDeleted == 0);
+            if (taskItem is null)
             {
-                Id = id,
-                IsDeleted = 1,
-                IsCompleted = taskItem.IsCompleted,
-                Title = taskItem.Title,
-            };
-            var taskresponse = FileHelper.UpdateToDoList(taskUpdate);
-            return View(nameof(Index), taskresponse);
+                return BadRequest();
+            }
+            var taskresponse = FileHelper.DelteToDoList(taskItemDelete);
+            return RedirectToAction(nameof(Index));
         }
         #endregion
 
