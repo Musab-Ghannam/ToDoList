@@ -7,6 +7,7 @@ namespace ToDoList.Controllers
     public class ToDoListController : BaseController
     {
 
+        #region GetTasks
         public IActionResult Index()
         {
             var taskItemList = FileHelper.ReadCsvFile(c=>c.IsCompleted == true &&  c.IsDeleted == 0);
@@ -18,6 +19,7 @@ namespace ToDoList.Controllers
             var taskItemList = FileHelper.ReadCsvFile(c => c.IsCompleted == false && c.IsDeleted == 0);
             return View(taskItemList);
         }
+        #endregion
 
         #region CreateTask
         public IActionResult CreateTask()
